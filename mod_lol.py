@@ -94,7 +94,7 @@ def on_exit(bot):
     bot.del_command('patch')
 
 def patch(bot, user, channel, args):
-    msg = "The bot is displaying info for patch: 6.16.2* (*May not be current, look up latest patch)"
+    msg = "The bot is displaying info for patch: 6.17.1* (*May not be current, look up latest patch)"
     bot.send_msg(channel, msg)
 
 def get_summoner_id(name, region):

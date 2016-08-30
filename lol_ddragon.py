@@ -7,7 +7,7 @@ import urllib2
 normalization_pattern = re.compile('[^a-zA-Z]+') # Only retain alphabeticals
 
 data_location = config.ddragon_location
-web_data_location = "http://ddragon.leagueoflegends.com/cdn/6.16.2/data/en_US/"
+web_data_location = "http://ddragon.leagueoflegends.com/cdn/6.17.1/data/en_US/"
 use_local_cache = config.ddragon_use_local_cache
 
 data_names = {
