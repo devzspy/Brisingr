@@ -35,7 +35,7 @@ def adminhelp(bot, user, channel, args):
     bot.send_msg(user, msg)
 
 def version(bot, user, channel, args):
-    msg = 'This bot is currently running version: 2.2 - for the latest version visit: http://www.falconspy.org/category/projects/irc-league-of-legends-bot/'
+    msg = 'This bot is currently running version: 2.3 - for the latest version visit: http://www.falconspy.org/category/projects/irc-league-of-legends-bot/'
     bot.send_msg(user, msg)
 
 def add_entry(trigger, text):
