@@ -9,7 +9,14 @@
 * BeamofLove
 
 ## Changelog
-http://www.falconspy.org/category/projects/irc-league-of-legends-bot
+http://www.falconspy.org/irc-lol-bot-changelog/
+
+## Configurations
+* Riot API Key
+* Google Search API Key
+* QuakeNet Auth Name and Password
+* Bot Administrator password
+* See the config.py for the rest!
 
 ## Commands
 * !lm/!lg/!lastmatch/!lastgame [BR, EUNE, EUW, JP, KR, LAN, LAS, NA, OCE, RU, TR] [Summoner name]
@@ -25,6 +32,7 @@ http://www.falconspy.org/category/projects/irc-league-of-legends-bot
 * !patch - displays the patch LoL patch the bot is using
 * !version - displays the bots version
 * !lolnews [n] - Shows Nth most recent news article on LoL site (N is optional)
+* !auth [Auth password]
 
 ## Admin Commands
 * !silence - The bot will stop responding to user commands (Type a second time to allow it to respond)
