@@ -1,7 +1,6 @@
 # ![logo](http://i.imgur.com/MR1rEop.png)
 =============
 
-
 ## Authors
 * SasCologne
 * FalconSpy
@@ -10,6 +9,10 @@
 
 ## Changelog
 http://www.falconspy.org/irc-lol-bot-changelog/
+
+## Requirements
+* Python 2.7
+* Twisted Matrix Library(https://twistedmatrix.com/trac/)
 
 ## Configurations
 * Riot API Key
