@@ -35,7 +35,7 @@ def adminhelp(bot, user, channel, args):
     bot.send_msg(user, msg)
 
 def version(bot, user, channel, args):
-    msg = 'This bot is currently running version: 2.4 - for the latest version visit: http://github.com/devzspy/Brisingr'
+    msg = 'This bot is currently running version: 2.5 - for the latest version visit: http://github.com/devzspy/Brisingr'
     bot.send_msg(user, msg)
 
 def add_entry(trigger, text):
