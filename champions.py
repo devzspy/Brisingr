@@ -38,6 +38,7 @@ champions = {
     74: 'Heimerdinger',
     420: 'Illaoi',
     39: 'Irelia',
+    427: 'Ivern',
     40: 'Janna',
     59: 'Jarvan IV',
     24: 'Jax',
