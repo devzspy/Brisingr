@@ -127,7 +127,7 @@ def summoner(bot, user, channel, args):
     choice = args[0].lower()
 
     #easter egg
-    if choice is "D" or choice is "d":
+    if choice == "d":
         bot.send_msg(channel, 'Flash on D baby!.')
         return
     
