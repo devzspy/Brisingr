@@ -10,26 +10,26 @@ from datetime import timedelta
 global api
 
 game_types = {
-    'NONE': 'Custom Game',						# Custom games
-	'NORMAL': 'Normal 5x5',					# Summoner's Rift unranked games
-	'NORMAL_3x3': 'Normal 3x3',				# Twisted Treeline unranked games
-	'ODIN_UNRANKED': 'Dominion',			# Dominion/Crystal Scar games
-	'ARAM_UNRANKED_5x5': 'ARAM',		# ARAM / Howling Abyss games
-	'BOT': 'Coop 5x5',						# Summoner's Rift and Crystal Scar games played against AI
-	'BOT_3x3': 'Coop 3x3',					# Twisted Treeline games played against AI
-	'RANKED_SOLO_5x5': 'Ranked Solo',			# Summoner's Rift ranked solo queue games
-	'RANKED_TEAM_3x3': 'Ranked 3x3',			# Twisted Treeline ranked team games
-	'RANKED_TEAM_5x5': 'Ranked 5x5',			# Summoner's Rift ranked team games
-	'ONEFORALL_5x5': 'One For All',			# One for All games
-	'FIRSTBLOOD_1x1': 'Snowdown Showdown 1x1',			# Snowdown Showdown 1x1 games
-	'FIRSTBLOOD_2x2': 'Snowdown Showdown 2x2',			# Snowdown Showdown 2x2 games
-	'SR_6x6': 'Hexakill',					# Hexakill games
-	'CAP_5x5': 'Team Builder',					# Team Builder games
-	'URF': 'Ultra Rapid Fire',						# Ultra Rapid Fire games
-	'URF_BOT': 'Coop Ultra Rapid Fire',					# Ultra Rapid Fire games against AI
-        'KING_PORO_5x5': 'King Poro',               #King Poro ARAM
-        'COUNTER_PICK': 'Nemesis',                  #Nemesis (Pick oponents champs)
-        'BILGEWATER_5x5': 'Black Market Brawlers',       #Black Market Brawlers
+    'NONE': 'Custom Game',                      # Custom games
+    'NORMAL': 'Normal 5x5',                     # Summoner's Rift unranked games
+    'NORMAL_3x3': 'Normal 3x3',                 # Twisted Treeline unranked games
+    'ODIN_UNRANKED': 'Dominion',                # Dominion/Crystal Scar games
+    'ARAM_UNRANKED_5x5': 'ARAM',                # ARAM / Howling Abyss games
+    'BOT': 'Coop 5x5',                          # Summoner's Rift and Crystal Scar games played against AI
+    'BOT_3x3': 'Coop 3x3',                      # Twisted Treeline games played against AI
+    'RANKED_SOLO_5x5': 'Ranked Solo',           # Summoner's Rift ranked solo queue games
+    'RANKED_TEAM_3x3': 'Ranked 3x3',            # Twisted Treeline ranked team games
+    'RANKED_TEAM_5x5': 'Ranked 5x5',            # Summoner's Rift ranked team games
+    'ONEFORALL_5x5': 'One For All',             # One for All games
+    'FIRSTBLOOD_1x1': 'Snowdown Showdown 1x1',  # Snowdown Showdown 1x1 games
+    'FIRSTBLOOD_2x2': 'Snowdown Showdown 2x2',  # Snowdown Showdown 2x2 games
+    'SR_6x6': 'Hexakill',                       # Hexakill games
+    'CAP_5x5': 'Team Builder',                  # Team Builder games
+    'URF': 'Ultra Rapid Fire',                  # Ultra Rapid Fire games
+    'URF_BOT': 'Coop Ultra Rapid Fire',         # Ultra Rapid Fire games against AI
+    'KING_PORO_5x5': 'King Poro',               # King Poro ARAM
+    'COUNTER_PICK': 'Nemesis',                  # Nemesis (Pick oponents champs)
+    'BILGEWATER_5x5': 'Black Market Brawlers',  # Black Market Brawlers
 }
 
 summoner_ids = {
