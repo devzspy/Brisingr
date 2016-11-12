@@ -198,9 +198,13 @@ class IRCBot(irc.IRCClient):
     def signedOn(self):
         '''Called when bot has successfully signed on to server.'''
         # auth with Q
-        self.msg('Q@CServe.quakenet.org', 'AUTH ' + config.Q_user + ' ' + config.Q_password)
-        self.mode(self.nickname, True, 'x')
-        
+        if config.Q_user and config.Q_password:
+            self.logger.log("Authenticating...")
+            self.msg('Q@CServe.quakenet.org', 'AUTH ' + config.Q_user + ' ' + config.Q_password)
+            self.mode(self.nickname, True, 'x')
+        else:
+            self.logger.log("No auth information provided")
+
         # load modules
         global modules
         modules = [utility.reload_module(module) for module in config.startup_modules]
