@@ -114,8 +114,9 @@ def get_summoner():
 def set_patch_version(api, version):
     global patch_version
 
-    patch_version = version
-    build_name_to_key_map(api)
+    if patch_version != version:
+        patch_version = version
+        build_name_to_key_map(api)
 
 def build_name_to_key_map(api):
     champions = api.static_get_champion_list()

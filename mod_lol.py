@@ -1,10 +1,14 @@
-from lib_riotwatcher import *
+from datetime import timedelta
+import functools
+
+from twisted.internet import task
+
+from lib_riotwatcher import RiotWatcher
 from items import items
 import config
 import lol_ddragon
 import utility
 
-from datetime import timedelta
 
 global api
 
@@ -54,8 +58,9 @@ def on_load(bot):
     api = RiotWatcher(config.api_key)
     
     sync_patch_version(bot)
-    # TODO register version check timer
     
+    l = task.LoopingCall(functools.partial(sync_patch_version, bot))
+    l.start(60 * 60)  # call every hour
     
     bot.add_command('free', free_to_play)
     bot.add_command('freeweek', free_to_play)
@@ -77,8 +82,6 @@ def on_load(bot):
     bot.add_command('item', item)
     bot.add_command('patch', patch)
     
-    
-
 def on_exit(bot):
     bot.del_command('free')
     bot.del_command('freeweek')
