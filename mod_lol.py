@@ -33,6 +33,9 @@ game_types = {
     'KING_PORO_5x5': 'King Poro',               # King Poro ARAM
     'COUNTER_PICK': 'Nemesis',                  # Nemesis (Pick oponents champs)
     'BILGEWATER_5x5': 'Black Market Brawlers',  # Black Market Brawlers
+    'ARURF_5X5': 'ARURF',                       # All Random URF
+    'SIEGE': 'Siege',                           # Siege
+    'DEFINITELY_NOT_DOMINION_5x5': 'Dominion',  # Dominion
     'RANKED_FLEX_SR': 'Ranked Flex',            # Ranked Flex Queue
 }
 
