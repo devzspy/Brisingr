@@ -33,6 +33,7 @@ game_types = {
     'KING_PORO_5x5': 'King Poro',               # King Poro ARAM
     'COUNTER_PICK': 'Nemesis',                  # Nemesis (Pick oponents champs)
     'BILGEWATER_5x5': 'Black Market Brawlers',  # Black Market Brawlers
+    'RANKED_FLEX_SR': 'Ranked Flex',            # Ranked Flex Queue
 }
 
 summoner_ids = {
