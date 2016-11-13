@@ -105,6 +105,12 @@ def sync_patch_version(bot):
     versions = api.static_get_versions()
     latest_version = versions[0]
     
+    if lol_ddragon.patch_version is not None:
+        if lol_ddragon.patch_version.split(".") < latest_version.split("."):
+            msg = ("Updated to patch version {version} (from {from_version})"
+                   .format(version=latest_version, from_version=lol_ddragon.patch_version))
+            bot.send_amsg(msg)
+    
     lol_ddragon.set_patch_version(api, latest_version)
 
 def patch(bot, user, channel, args):
