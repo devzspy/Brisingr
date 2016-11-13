@@ -213,6 +213,8 @@ class IRCBot(irc.IRCClient):
                 m.on_load(self)
             except:
                 self.logger.log('[ERROR] Module %s could not be loaded.' % m)
+                import traceback
+                traceback.print_exc()
 
         # join channels
         for channel in self.factory.channels:
