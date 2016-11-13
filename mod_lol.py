@@ -1,6 +1,5 @@
 from lib_riotwatcher import *
 from items import items
-from champions import champions
 import config
 import lol_ddragon
 import utility
@@ -54,6 +53,10 @@ def on_load(bot):
     global api
     api = RiotWatcher(config.api_key)
     
+    sync_patch_version(bot)
+    # TODO register version check timer
+    
+    
     bot.add_command('free', free_to_play)
     bot.add_command('freeweek', free_to_play)
     bot.add_command('f2p', free_to_play)
@@ -73,6 +76,8 @@ def on_load(bot):
     
     bot.add_command('item', item)
     bot.add_command('patch', patch)
+    
+    
 
 def on_exit(bot):
     bot.del_command('free')
@@ -93,8 +98,14 @@ def on_exit(bot):
     bot.del_command('item')
     bot.del_command('patch')
 
+def sync_patch_version(bot):
+    versions = api.static_get_versions()
+    latest_version = versions[0]
+    
+    lol_ddragon.set_patch_version(api, latest_version)
+
 def patch(bot, user, channel, args):
-    msg = "The bot is displaying info for patch: 6.20.1* (*May not be current, look up latest patch)"
+    msg = "The bot is displaying info for patch: {}".format(lol_ddragon.patch_version)
     bot.send_msg(channel, msg)
 
 def get_summoner_id(name, region):
@@ -112,7 +123,8 @@ def free_to_play(bot, user, channel, args):
     msg = 'This weeks free rotation: '
     
     for c in r['champions']:
-        names.append(champions[c['id']])
+        name = lol_ddragon.id_to_name_map[c['id']]
+        names.append(name)
     
     for n in names:
         msg += n + ', '
@@ -233,7 +245,7 @@ def last_game(bot, user, channel, args):
         items_str += items[item] + ', '
     items_str = str(items_str[:len(items_str) - 2])
     
-    champ = champions[r['championId']]    
+    champ = lol_ddragon.id_to_name_map[r['championId']]
     
     summoners = {
         1: 'Cleanse',
@@ -256,8 +268,6 @@ def last_game(bot, user, channel, args):
             
     summoner_str = summoners[spell1] + ', ' + summoners[spell2]
 
-    champ = champions[r['championId']]    
-    
     msg = '[%s] [%s] [%s] [%s] [%s] [Level: %s | Gold Earned: %s] [KDA: %s | CS: %s | Wards Used: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, kda, str(cs+cs_neutral), ward_placed ,items_str, summoner_str)
         
     msg = str(msg)
@@ -372,7 +382,6 @@ def last_game_detail(bot, user, channel, args):
         items_str += items[item] + ', '
     items_str = str(items_str[:len(items_str) - 2])
 
-
     summoners = {
         1: 'Cleanse',
         2: 'Clairvoyance',
@@ -394,7 +403,7 @@ def last_game_detail(bot, user, channel, args):
             
     summoner_str = summoners[spell1] + ', ' + summoners[spell2]
 
-    champ = champions[r['championId']]    
+    champ = lol_ddragon.id_to_name_map[r['championId']]
     
     msg = '[%s] [%s] [%s] [%s] [%s] [Level: %s] [Gold Earned: %s | Spent: %s] [KDA: %s] [Total CS: %s | Enemy JG: %s | Your JG: %s] [Wards Used: %s | Killed: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, gold_spent , kda, str(cs+cs_neutral), str(cs_enemy_jungle), str(cs_my_jungle), ward_placed, ward_kill, items_str, summoner_str)
         

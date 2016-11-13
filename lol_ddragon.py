@@ -1,153 +1,92 @@
 import json
 import config
 import re
-import string
 import urllib2
 
-normalization_pattern = re.compile('[^a-zA-Z]+') # Only retain alphabeticals
-
 data_location = config.ddragon_location
-web_data_location = "http://ddragon.leagueoflegends.com/cdn/6.20.1/data/en_US/"
+patch_version = None
+web_data_location = "http://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/"
 use_local_cache = config.ddragon_use_local_cache
 
-data_names = {
-    "aatrox":   "Aatrox",
-    "ahri":     "Ahri",
-    "akali":    "Akali",
-    "alistar":  "Alistar",
-    "amumu":    "Amumu",
-    "anivia":   "Anivia",
-    "annie":    "Annie",
-    "ashe":     "Ashe",
-    "aurelionsol": "AurelionSol", "aurelion": "AurelionSol", "sol": "AurelionSol", "aurelion sol": "AurelionSol",
-    "azir":     "Azir",
-    "bard":     "Bard",
-    "blitzcrank":"Blitzcrank", "blitz": "Blitzcrank",
-    "brand":    "Brand",
-    "braum":    "Braum",
-    "caitlyn":  "Caitlyn", "cait": "Caitlyn",
-    "cassiopeia":"Cassiopeia", "cass": "Cassiopeia", 
-    "chogath":  "Chogath", "cho": "Chogath",
-    "corki":    "Corki",
-    "darius":   "Darius",
-    "diana":    "Diana",
-    "drmundo":  "DrMundo", "mundo": "DrMundo",
-    "draven":   "Draven",
-    "ekko":     "Ekko",
-    "elise":    "Elise",
-    "evelynn":  "Evelynn", "eve": "Evelynn",
-    "ezreal":   "Ezreal", "ez": "Ezreal",
-    "fiddlesticks":"Fiddlesticks", "fiddle": "Fiddlesticks",
-    "fiora":    "Fiora",
-    "fizz":     "Fizz",
-    "galio":    "Galio",
-    "gangplank":"Gangplank", "gp": "Gangplank",
-    "garen":    "Garen",
-    "gnar":     "Gnar",
-    "gragas":   "Gragas",
-    "graves":   "Graves",
-    "hecarim":  "Hecarim", "pony": "Hecarim",
-    "heimerdinger":"Heimerdinger", "heimer": "Heimerdinger", "donger": "Heimerdinger",
-    "illaoi": "Illaoi", "hentai": "Illaoi",
-    "irelia":   "Irelia",
-    "ivern": "Ivern",
-    "janna":    "Janna",
-    "jarvaniv": "JarvanIV", "jarvan": "JarvanIV", "j": "JarvanIV",
-    "jax":      "Jax",
-    "jayce":    "Jayce",
-    "jhin":     "Jhin",
-    "jinx":     "Jinx",
-    "kalista":  "Kalista",
-    "karma":    "Karma",
-    "karthus":  "Karthus",
-    "kassadin": "Kassadin", "kassa": "Kassadin",
-    "katarina": "Katarina", "kata": "Katarina",
-    "kayle":    "Kayle",
-    "kennen":   "Kennen",
-    "khazix":   "Khazix", "kha": "Khazix", "bug": "Khazix",
-    "kindred": "Kindred", "wolf":"Kindred",
-    "kled": "Kled", "skaarl":"Kled",
-    "kogmaw":   "KogMaw", "kog": "KogMaw",
-    "leblanc":  "Leblanc",
-    "leesin":   "LeeSin", "lee": "LeeSin",
-    "leona":    "Leona",
-    "lissandra":"Lissandra",
-    "lucian":   "Lucian",
-    "lulu":     "Lulu",
-    "lux":      "Lux",
-    "malphite": "Malphite", "malph": "Malphite",
-    "malzahar": "Malzahar", "malz": "Malzahar",
-    "maokai":   "Maokai",
-    "masteryi": "MasterYi", "yi": "MasterYi",
-    "missfortune":"MissFortune", "mf": "MissFortune",
-    "mordekaiser":"Mordekaiser", "morde": "Mordekaiser",
-    "morgana":  "Morgana", "morg": "Morgana",
-    "nami":     "Nami", "fish": "Nami",
-    "nasus":    "Nasus", "susan": "Nasus", "dog": "Nasus", "doge": "Nasus",
-    "nautilus": "Nautilus", "naut": "Nautilus",
-    "nidalee":  "Nidalee", "nida": "Nidalee", "nid": "Nidalee",
-    "nocturne": "Nocturne", "noct": "Nocturne", "noc": "Nocturne",
-    "nunu":     "Nunu",
-    "olaf":     "Olaf",
-    "orianna":  "Orianna", "ori": "Orianna",
-    "pantheon": "Pantheon", "panth": "Pantheon",
-    "poppy":    "Poppy",
-    "quinn":    "Quinn",
-    "rammus":   "Rammus",
-    "reksai":   "Rek\'Sai",
-    "renekton": "Renekton", "renek": "Renekton", "rene": "Renekton",
-    "rengar":   "Rengar",
-    "riven":    "Riven",
-    "rumble":   "Rumble",
-    "ryze":     "Ryze",
-    "sejuani":  "Sejuani", "sej": "Sejuani",
-    "shaco":    "Shaco",
-    "shen":     "Shen",
-    "shyvanna": "Shyvanna",
-    "singed":   "Singed",
-    "sion":     "Sion",
-    "sivir":    "Sivir",
-    "skarner":  "Skarner",
-    "sona":     "Sona",
-    "soraka":   "Soraka", "raka": "Soraka",
-    "swain":    "Swain",
-    "syndra":   "Syndra",
-    "tahmkench":    "TahmKench", "tahm": "TahmKench", "Tahm Kench":"TahmKench",
-    "taliyah": "Taliyah", "tali": "Taliyah",
-    "talon":    "Talon",
-    "taric":    "Taric",
-    "teemo":    "Teemo",
-    "thresh":   "Thresh",
-    "tristana": "Tristana", "trist": "Tristana",
-    "trundle":  "Trundle",
-    "tryndamere":"Tryndamere", "trynd": "Tryndamere",
-    "twistedfate":"TwistedFate", "tf": "TwistedFate", "Twisted Fate":"TwistedFate",
-    "twitch":   "Twitch",
-    "udyr":     "Udyr",
-    "urgot":    "Urgot",
-    "varus":    "Varus",
-    "vayne":    "Vayne",
-    "veigar":   "Veigar",
-    "velkoz":   "Vel\'Koz",
-    "vi":       "Vi",
-    "viktor":   "Viktor",
-    "vladimir": "Vladimir", "vlad": "Vladimir",
-    "volibear": "Volibear", "voli": "Volibear",
-    "warwick":  "Warwick", "ww": "Warwick",
-    "wukong":   "MonkeyKing", "monkeyking":"MonkeyKing",
-    "xerath":   "Xerath",
-    "xinzhao":  "XinZhao", "xin": "XinZhao", "Xin Zhao":"XinZhao",
-    "yasuo":    "Yasuo",
-    "yorick":   "Yorick",
-    "zac":      "Zac",
-    "zed":      "Zed",
-    "ziggs":    "Ziggs",
-    "zilean":   "Zilean", "zil": "Zilean",
-    "zyra":     "Zyra",
+id_to_name_map = {}
+name_to_key_map = {}
+custom_aliases = {
+    "aurelion": "AurelionSol", 
+    "sol": "AurelionSol", 
+    "blitz": "Blitzcrank",
+    "cait": "Caitlyn",
+    "cass": "Cassiopeia", 
+    "cho": "Chogath",
+    "mundo": "DrMundo",
+    "eve": "Evelynn",
+    "ez": "Ezreal",
+    "fiddle": "Fiddlesticks",
+    "gp": "Gangplank",
+    "pony": "Hecarim",
+    "helicopter": "Hecarim",
+    "heimer": "Heimerdinger", 
+    "donger": "Heimerdinger",
+    "hentai": "Illaoi",
+    "jarvan": "JarvanIV", 
+    "j4": "JarvanIV",
+    "kass": "Kassadin", 
+    "kassa": "Kassadin",
+    "kata": "Katarina", 
+    "kat": "Katarina",
+    "kha": "Khazix", 
+    "bug": "Khazix",
+    "k6": "Khazix",
+    "wolf": "Kindred", 
+    "lamb": "Kindred",
+    "kled": "Kled", 
+    "skaarl": "Kled",
+    "kog": "KogMaw",
+    "lee": "LeeSin",
+    "liss": "Lissandra",
+    "malph": "Malphite",
+    "malz": "Malzahar",
+    "yi": "MasterYi",
+    "mf": "MissFortune",
+    "morde": "Mordekaiser",
+    "morg": "Morgana",
+    "susan": "Nasus",
+    "dog": "Nasus",
+    "doge": "Nasus",
+    "naut": "Nautilus",
+    "nida": "Nidalee", 
+    "nid": "Nidalee",
+    "noct": "Nocturne",
+    "noc": "Nocturne",
+    "ori": "Orianna",
+    "panth": "Pantheon",
+    "renek": "Renekton",
+    "rene": "Renekton",
+    "sej": "Sejuani",
+    "raka": "Soraka",
+    "tahm": "TahmKench",
+    "tali": "Taliyah",
+    "trist": "Tristana",
+    "trynd": "Tryndamere",
+    "tf": "TwistedFate",
+    "vlad": "Vladimir",
+    "voli": "Volibear",
+    "ww": "Warwick",
+    "wukong": "MonkeyKing",
+    "xin": "XinZhao",
+    "zil": "Zilean",
 }
 
 def normalize_name(name):
-    return data_names[normalization_pattern.sub('', name).lower()]
+    # Only retain alphanumerics and lower-case
+    return re.sub(r'[^a-zA-Z0-9]+', '', name).lower()
+
+def name_to_key(name):
+    # Only retain alphanumerics and lower-case
+    name = normalize_name(name)
+    if name in name_to_key_map:
+        return name_to_key_map[name]
+    else:
+        return None
 
 def get_champion(name):
     name = normalize_name(name)
@@ -157,16 +96,34 @@ def get_champion(name):
             return json.load(f)
 
     else:
-        response = urllib2.urlopen(web_data_location + "champion/" + name + ".json").read()
+        url = web_data_location.format(version=patch_version) + "champion/" + name + ".json"
+        print(url)
+        response = urllib2.urlopen(url).read()
         return json.loads(response)
 
 def get_summoner():
-    
     if use_local_cache:
         with open(data_location + 'summoner.json') as f:
             return json.load(f)
 
     else:
-        response = urllib2.urlopen(web_data_location + "summoner.json").read()
+        response = urllib2.urlopen(web_data_location.format(version=patch_version)
+                                   + "summoner.json").read()
         return json.loads(response)
 
+def set_patch_version(api, version):
+    global patch_version
+
+    patch_version = version
+    build_name_to_key_map(api)
+
+def build_name_to_key_map(api):
+    champions = api.static_get_champion_list()
+    name_to_key_map.clear()
+    id_to_name_map.clear()
+
+    for champion in champions['data'].values():
+        name_to_key_map[normalize_name(champion['name'])] = champion['key']
+        id_to_name_map[champion['id']] = champion['name']
+
+    name_to_key_map.update(custom_aliases)
