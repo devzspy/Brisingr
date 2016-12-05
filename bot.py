@@ -15,7 +15,7 @@ import re
 # project imports
 import config
 import utility
-from MessageLogger import *
+from MessageLogger import MessageLogger
 
 
 class IRCBot(irc.IRCClient):
@@ -33,6 +33,7 @@ class IRCBot(irc.IRCClient):
     def __init__(self):
         self.is_silent = False
         self.anti_spam = {} # {'#channel': (time, message),}
+        self.channels = set()
     
     # custom methods
     def send_msg(self, channel, message):
@@ -51,7 +52,11 @@ class IRCBot(irc.IRCClient):
             self.msg(channel, message, length = 410)
             self.logger.log('[OUT] [%s] %s' % (channel, message))
             self.anti_spam[channel] = (time.time(), message)
-        
+    
+    def send_amsg(self, message):
+        for channel in self.channels:
+            self.send_msg(channel, message)
+    
     def send_say(self, channel, message):
         # spam protection
         if self.is_silent:
@@ -198,9 +203,13 @@ class IRCBot(irc.IRCClient):
     def signedOn(self):
         '''Called when bot has successfully signed on to server.'''
         # auth with Q
-        self.msg('Q@CServe.quakenet.org', 'AUTH ' + config.Q_user + ' ' + config.Q_password)
-        self.mode(self.nickname, True, 'x')
-        
+        if config.Q_user and config.Q_password:
+            self.logger.log("Authenticating...")
+            self.msg('Q@CServe.quakenet.org', 'AUTH ' + config.Q_user + ' ' + config.Q_password)
+            self.mode(self.nickname, True, 'x')
+        else:
+            self.logger.log("No auth information provided")
+
         # load modules
         global modules
         modules = [utility.reload_module(module) for module in config.startup_modules]
@@ -209,6 +218,8 @@ class IRCBot(irc.IRCClient):
                 m.on_load(self)
             except:
                 self.logger.log('[ERROR] Module %s could not be loaded.' % m)
+                import traceback
+                traceback.print_exc()
 
         # join channels
         for channel in self.factory.channels:
@@ -217,10 +228,12 @@ class IRCBot(irc.IRCClient):
     def joined(self, channel):
         '''Called when bot joins a channel.'''
         self.logger.log('[JOIN] %s' % channel)
+        self.channels.add(channel)
     
     def left(self, channel):
         '''Calle when bot leaves a channel.'''
         self.logger.log('[PART] %s' % channel)
+        self.channels.remove(channel)
     
     def privmsg(self, user, channel, msg):
         '''Called when bot receives a message.'''

@@ -1,35 +1,42 @@
-from lib_riotwatcher import *
+from datetime import timedelta
+import functools
+
+from twisted.internet import task
+
+from lib_riotwatcher import RiotWatcher
 from items import items
-from champions import champions
 import config
 import lol_ddragon
 import utility
 
-from datetime import timedelta
 
 global api
 
 game_types = {
-    'NONE': 'Custom Game',						# Custom games
-	'NORMAL': 'Normal 5x5',					# Summoner's Rift unranked games
-	'NORMAL_3x3': 'Normal 3x3',				# Twisted Treeline unranked games
-	'ODIN_UNRANKED': 'Dominion',			# Dominion/Crystal Scar games
-	'ARAM_UNRANKED_5x5': 'ARAM',		# ARAM / Howling Abyss games
-	'BOT': 'Coop 5x5',						# Summoner's Rift and Crystal Scar games played against AI
-	'BOT_3x3': 'Coop 3x3',					# Twisted Treeline games played against AI
-	'RANKED_SOLO_5x5': 'Ranked Solo',			# Summoner's Rift ranked solo queue games
-	'RANKED_TEAM_3x3': 'Ranked 3x3',			# Twisted Treeline ranked team games
-	'RANKED_TEAM_5x5': 'Ranked 5x5',			# Summoner's Rift ranked team games
-	'ONEFORALL_5x5': 'One For All',			# One for All games
-	'FIRSTBLOOD_1x1': 'Snowdown Showdown 1x1',			# Snowdown Showdown 1x1 games
-	'FIRSTBLOOD_2x2': 'Snowdown Showdown 2x2',			# Snowdown Showdown 2x2 games
-	'SR_6x6': 'Hexakill',					# Hexakill games
-	'CAP_5x5': 'Team Builder',					# Team Builder games
-	'URF': 'Ultra Rapid Fire',						# Ultra Rapid Fire games
-	'URF_BOT': 'Coop Ultra Rapid Fire',					# Ultra Rapid Fire games against AI
-        'KING_PORO_5x5': 'King Poro',               #King Poro ARAM
-        'COUNTER_PICK': 'Nemesis',                  #Nemesis (Pick oponents champs)
-        'BILGEWATER_5x5': 'Black Market Brawlers',       #Black Market Brawlers
+    'NONE': 'Custom Game',                      # Custom games
+    'NORMAL': 'Normal 5x5',                     # Summoner's Rift unranked games
+    'NORMAL_3x3': 'Normal 3x3',                 # Twisted Treeline unranked games
+    'ODIN_UNRANKED': 'Dominion',                # Dominion/Crystal Scar games
+    'ARAM_UNRANKED_5x5': 'ARAM',                # ARAM / Howling Abyss games
+    'BOT': 'Coop 5x5',                          # Summoner's Rift and Crystal Scar games played against AI
+    'BOT_3x3': 'Coop 3x3',                      # Twisted Treeline games played against AI
+    'RANKED_SOLO_5x5': 'Ranked Solo',           # Summoner's Rift ranked solo queue games
+    'RANKED_TEAM_3x3': 'Ranked 3x3',            # Twisted Treeline ranked team games
+    'RANKED_TEAM_5x5': 'Ranked 5x5',            # Summoner's Rift ranked team games
+    'ONEFORALL_5x5': 'One For All',             # One for All games
+    'FIRSTBLOOD_1x1': 'Snowdown Showdown 1x1',  # Snowdown Showdown 1x1 games
+    'FIRSTBLOOD_2x2': 'Snowdown Showdown 2x2',  # Snowdown Showdown 2x2 games
+    'SR_6x6': 'Hexakill',                       # Hexakill games
+    'CAP_5x5': 'Team Builder',                  # Team Builder games
+    'URF': 'Ultra Rapid Fire',                  # Ultra Rapid Fire games
+    'URF_BOT': 'Coop Ultra Rapid Fire',         # Ultra Rapid Fire games against AI
+    'KING_PORO_5x5': 'King Poro',               # King Poro ARAM
+    'COUNTER_PICK': 'Nemesis',                  # Nemesis (Pick oponents champs)
+    'BILGEWATER_5x5': 'Black Market Brawlers',  # Black Market Brawlers
+    'ARURF_5X5': 'ARURF',                       # All Random URF
+    'SIEGE': 'Siege',                           # Siege
+    'DEFINITELY_NOT_DOMINION_5x5': 'Dominion',  # Dominion
+    'RANKED_FLEX_SR': 'Ranked Flex',            # Ranked Flex Queue
 }
 
 summoner_ids = {
@@ -54,6 +61,11 @@ def on_load(bot):
     global api
     api = RiotWatcher(config.api_key)
     
+    sync_patch_version(bot)
+    
+    l = task.LoopingCall(functools.partial(sync_patch_version, bot))
+    l.start(60 * 60)  # call every hour
+    
     bot.add_command('free', free_to_play)
     bot.add_command('freeweek', free_to_play)
     bot.add_command('f2p', free_to_play)
@@ -73,7 +85,7 @@ def on_load(bot):
     
     bot.add_command('item', item)
     bot.add_command('patch', patch)
-
+    
 def on_exit(bot):
     bot.del_command('free')
     bot.del_command('freeweek')
@@ -93,8 +105,20 @@ def on_exit(bot):
     bot.del_command('item')
     bot.del_command('patch')
 
+def sync_patch_version(bot):
+    versions = api.static_get_versions()
+    latest_version = versions[0]
+    
+    if lol_ddragon.patch_version is not None:
+        if lol_ddragon.patch_version.split(".") < latest_version.split("."):
+            msg = ("Updated to patch version {version} (from {from_version})"
+                   .format(version=latest_version, from_version=lol_ddragon.patch_version))
+            bot.send_amsg(msg)
+    
+    lol_ddragon.set_patch_version(api, latest_version)
+
 def patch(bot, user, channel, args):
-    msg = "The bot is displaying info for patch: 6.20.1* (*May not be current, look up latest patch)"
+    msg = "The bot is displaying info for patch: {}".format(lol_ddragon.patch_version)
     bot.send_msg(channel, msg)
 
 def get_summoner_id(name, region):
@@ -112,7 +136,8 @@ def free_to_play(bot, user, channel, args):
     msg = 'This weeks free rotation: '
     
     for c in r['champions']:
-        names.append(champions[c['id']])
+        name = lol_ddragon.id_to_name_map[c['id']]
+        names.append(name)
     
     for n in names:
         msg += n + ', '
@@ -127,7 +152,7 @@ def summoner(bot, user, channel, args):
     choice = args[0].lower()
 
     #easter egg
-    if choice is "D" or choice is "d":
+    if choice == "d":
         bot.send_msg(channel, 'Flash on D baby!.')
         return
     
@@ -233,7 +258,7 @@ def last_game(bot, user, channel, args):
         items_str += items[item] + ', '
     items_str = str(items_str[:len(items_str) - 2])
     
-    champ = champions[r['championId']]    
+    champ = lol_ddragon.id_to_name_map[r['championId']]
     
     summoners = {
         1: 'Cleanse',
@@ -256,8 +281,6 @@ def last_game(bot, user, channel, args):
             
     summoner_str = summoners[spell1] + ', ' + summoners[spell2]
 
-    champ = champions[r['championId']]    
-    
     msg = '[%s] [%s] [%s] [%s] [%s] [Level: %s | Gold Earned: %s] [KDA: %s | CS: %s | Wards Used: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, kda, str(cs+cs_neutral), ward_placed ,items_str, summoner_str)
         
     msg = str(msg)
@@ -372,7 +395,6 @@ def last_game_detail(bot, user, channel, args):
         items_str += items[item] + ', '
     items_str = str(items_str[:len(items_str) - 2])
 
-
     summoners = {
         1: 'Cleanse',
         2: 'Clairvoyance',
@@ -394,7 +416,7 @@ def last_game_detail(bot, user, channel, args):
             
     summoner_str = summoners[spell1] + ', ' + summoners[spell2]
 
-    champ = champions[r['championId']]    
+    champ = lol_ddragon.id_to_name_map[r['championId']]
     
     msg = '[%s] [%s] [%s] [%s] [%s] [Level: %s] [Gold Earned: %s | Spent: %s] [KDA: %s] [Total CS: %s | Enemy JG: %s | Your JG: %s] [Wards Used: %s | Killed: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, gold_spent , kda, str(cs+cs_neutral), str(cs_enemy_jungle), str(cs_my_jungle), ward_placed, ward_kill, items_str, summoner_str)
         

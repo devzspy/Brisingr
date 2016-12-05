@@ -227,7 +227,7 @@ class RiotWatcher:
         return True
 
     def base_request(self, url, region, static=False, **kwargs):
-        if region is "":
+        if region is None:
             region = self.default_region
         args = {'api_key': self.key}
         for k in kwargs:
@@ -273,8 +273,11 @@ class RiotWatcher:
 
     # champion-v1.2
     def _champion_request(self, end_url, region, **kwargs):
+        if end_url:
+            end_url = "/" + end_url
+
         return self.base_request(
-            'v{version}/champion/{end_url}'.format(
+            'v{version}/champion{end_url}'.format(
                 version=api_versions['champion'],
                 end_url=end_url
             ),
