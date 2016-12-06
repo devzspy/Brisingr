@@ -480,20 +480,24 @@ def spell(bot, user, channel, args):
     if len(args) < 2:
         return
         
-    args[0] = lol_ddragon.normalize_name(args[0])
+    champ_key = lol_ddragon.name_to_key(args[0])
+    skill = args[1].upper()
     
-    data = lol_ddragon.get_champion(args[0])['data'][args[0]]
+    ch_data = lol_ddragon.get_champion(champ_key)['data'][champ_key]
     
     # check if passive is called, it has different data
-    if args[1].lower() in ['p', 'passive']:
-        data = data['passive']
-        msg = '[%s | Passive | %s] %s' % (args[0], data['name'], data['description'])
-        msg = utility.strip_tags(msg) # just to be sure
+    if skill in ['P', 'PASSIVE']:
+        data = ch_data['passive']
+        msg = '[%s | Passive | %s] %s' % (ch_data['name'], data['name'], data['description'])
+        msg = utility.strip_tags(msg)
         msg = str(msg)
         bot.send_msg(channel, str(msg))
         return
+    elif skill not in 'QWER':
+        bot.send_msg(channel, "Unknown skill; must be one of P, Q, W, E, R")
+        return
 
-    data = data['spells'][s[args[1].upper()]]
+    data = ch_data['spells'][s[skill]]
     
     cost = data['resource']
     text = data['tooltip']
@@ -515,7 +519,7 @@ def spell(bot, user, channel, args):
         text = text.replace('{{ ' + a['key'] + ' }}', str(a['coeff']) + scale)
     text = utility.strip_tags(text)
     
-    msg = '[%s | %s | %s] [Cost: %s] [CD: %s] [Range: %s] %s' % (args[0], args[1].upper(), data['name'], cost, cd, range_, text)
+    msg = '[%s | %s | %s] [Cost: %s] [CD: %s] [Range: %s] %s' % (ch_data['name'], skill, data['name'], cost, cd, range_, text)
     
     msg = str(msg)
     bot.send_msg(channel, msg)
