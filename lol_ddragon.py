@@ -89,14 +89,14 @@ def name_to_key(name):
         return None
 
 def get_champion(name):
-    name = normalize_name(name)
+    key = name_to_key(name)
 
     if use_local_cache:
-        with open(data_location + 'champion/' + name + '.json') as f:
+        with open(data_location + 'champion/' + key + '.json') as f:
             return json.load(f)
 
     else:
-        url = web_data_location.format(version=patch_version) + "champion/" + name + ".json"
+        url = web_data_location.format(version=patch_version) + "champion/" + key + ".json"
         print(url)
         response = urllib2.urlopen(url).read()
         return json.loads(response)

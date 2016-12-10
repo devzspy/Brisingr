@@ -423,37 +423,30 @@ def last_game_detail(bot, user, channel, args):
     msg = str(msg)
     bot.send_msg(channel, msg)
 
+
 def item(bot, user, channel, args):
     if len(args) < 1:
         return
     
-    r = api.static_get_item_list()
-    successful = False
+    search_name = lol_ddragon.normalize_name(' '.join(args))
     
-    for data in r:
-        for d in r.get(data):
-            #d = item ID Number
-            #r.get(data) = Giant string of items
-            try:
-                ret = r.get(data).get(d)
-                # check if this is the item we're looking for
-                if str(ret['name']).lower() == ' '.join(args[:]).lower():
-                    #print str(ret['name']).lower()
-                    msg = '[' + ret['name'] + '] '
-                    msg += ret['description']
-                    
-                    msg = utility.strip_tags(msg)
-                    
-                    msg = str(msg)
-                    bot.send_msg(channel, msg)
-                    
-                    successful = True # to avoid error messages
-                    break
-            except KeyError: # there's some unwanted data in the middle of the response, which we simply ignore
-                pass
-            
-        if successful:
+    r = api.static_get_item_list()
+    
+    for item_data in r['data'].values():
+        # check if this is the item we're looking for
+        if 'name' not in item_data:
+            # There is a weird entry in item data that only consists of {u'id': 3632}.
+            # Since we can't work with that, discard it.
+            continue
+        normalized_name = lol_ddragon.normalize_name(str(item_data['name']))
+        if search_name == normalized_name:
+            msg = '[{0[name]}] {0[description]}'.format(item_data)
+            msg = utility.strip_tags(msg)
+            bot.send_msg(channel, str(msg))
             return
+    else:
+        bot.send_msg(channel, "Item not found")
+            
 
 def spell(bot, user, channel, args):
     s = {
@@ -487,20 +480,24 @@ def spell(bot, user, channel, args):
     if len(args) < 2:
         return
         
-    args[0] = lol_ddragon.normalize_name(args[0])
+    champ_key = lol_ddragon.name_to_key(args[0])
+    skill = args[1].upper()
     
-    data = lol_ddragon.get_champion(args[0])['data'][args[0]]
+    ch_data = lol_ddragon.get_champion(champ_key)['data'][champ_key]
     
     # check if passive is called, it has different data
-    if args[1].lower() in ['p', 'passive']:
-        data = data['passive']
-        msg = '[%s | Passive | %s] %s' % (args[0], data['name'], data['description'])
-        msg = utility.strip_tags(msg) # just to be sure
+    if skill in ['P', 'PASSIVE']:
+        data = ch_data['passive']
+        msg = '[%s | Passive | %s] %s' % (ch_data['name'], data['name'], data['description'])
+        msg = utility.strip_tags(msg)
         msg = str(msg)
         bot.send_msg(channel, str(msg))
         return
+    elif skill not in 'QWER':
+        bot.send_msg(channel, "Unknown skill; must be one of P, Q, W, E, R")
+        return
 
-    data = data['spells'][s[args[1].upper()]]
+    data = ch_data['spells'][s[skill]]
     
     cost = data['resource']
     text = data['tooltip']
@@ -522,7 +519,7 @@ def spell(bot, user, channel, args):
         text = text.replace('{{ ' + a['key'] + ' }}', str(a['coeff']) + scale)
     text = utility.strip_tags(text)
     
-    msg = '[%s | %s | %s] [Cost: %s] [CD: %s] [Range: %s] %s' % (args[0], args[1].upper(), data['name'], cost, cd, range_, text)
+    msg = '[%s | %s | %s] [Cost: %s] [CD: %s] [Range: %s] %s' % (ch_data['name'], skill, data['name'], cost, cd, range_, text)
     
     msg = str(msg)
     bot.send_msg(channel, msg)
