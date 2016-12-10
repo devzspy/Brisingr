@@ -6,6 +6,7 @@
 * FalconSpy
 * Boreaas
 * BeamofLove
+* FichteFoll
 
 ## Changelog
 http://www.falconspy.org/irc-lol-bot-changelog/
