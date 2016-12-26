@@ -5,6 +5,7 @@ from twisted.internet import task
 
 from lib_riotwatcher import RiotWatcher
 from items import items
+from fuzzy_finder import fuzzyfinder
 import config
 import lol_ddragon
 import utility
@@ -428,22 +429,17 @@ def item(bot, user, channel, args):
     if len(args) < 1:
         return
     
-    search_name = lol_ddragon.normalize_name(' '.join(args))
-    
+    search_str = ' '.join(args).lower()
+    if len(search_str) < 3:
+        return
     r = api.static_get_item_list()
     
-    for item_data in r['data'].values():
-        # check if this is the item we're looking for
-        if 'name' not in item_data:
-            # There is a weird entry in item data that only consists of {u'id': 3632}.
-            # Since we can't work with that, discard it.
-            continue
-        normalized_name = lol_ddragon.normalize_name(str(item_data['name']))
-        if search_name == normalized_name:
-            msg = '[{0[name]}] {0[description]}'.format(item_data)
-            msg = utility.strip_tags(msg)
-            bot.send_msg(channel, str(msg))
-            return
+    suggestions = fuzzyfinder(search_str, r['data'].values(), lambda x: x.get('name', '').lower())
+    item_data = next(suggestions, None)
+    if item_data:
+        msg = '[{0[name]}] {0[description]}'.format(item_data)
+        msg = utility.strip_tags(msg)
+        bot.send_msg(channel, str(msg))
     else:
         bot.send_msg(channel, "Item not found")
             
