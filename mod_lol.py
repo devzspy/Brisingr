@@ -476,7 +476,14 @@ def spell(bot, user, channel, args):
     if len(args) < 2:
         return
         
-    champ_key = lol_ddragon.name_to_key(args[0])
+    champ_search = lol_ddragon.normalize_name(args[0])
+    suggestions = fuzzyfinder(champ_search, lol_ddragon.name_to_key_map.keys())
+    champ_name = next(suggestions, None)
+    if not champ_name:
+        bot.send_msg(channel, 'Champion not found')
+        return
+    champ_key = lol_ddragon.name_to_key(champ_name)
+    
     skill = args[1].upper()
     
     ch_data = lol_ddragon.get_champion(champ_key)['data'][champ_key]
