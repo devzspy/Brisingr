@@ -1,6 +1,3 @@
-# ![logo](http://i.imgur.com/MR1rEop.png)
-=============
-
 ## Authors
 * SasCologne
 * FalconSpy
