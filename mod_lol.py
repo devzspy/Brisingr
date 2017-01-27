@@ -4,7 +4,6 @@ import functools
 from twisted.internet import task
 
 from lib_riotwatcher import RiotWatcher
-from items import items
 from fuzzy_finder import fuzzyfinder
 import config
 import lol_ddragon
@@ -257,7 +256,7 @@ def last_game(bot, user, channel, args):
         except:
             continue
     for item in item_list:
-        items_str += items[item] + ', '
+        items_str += lol_ddragon.item_id_to_name_map[item] + ', '
     items_str = str(items_str[:len(items_str) - 2])
     
     champ = lol_ddragon.id_to_name_map[r['championId']]
@@ -394,7 +393,7 @@ def last_game_detail(bot, user, channel, args):
         except:
             continue
     for item in item_list:
-        items_str += items[item] + ', '
+        items_str += lol_ddragon.item_id_to_name_map[item] + ', '
     items_str = str(items_str[:len(items_str) - 2])
 
     summoners = {
