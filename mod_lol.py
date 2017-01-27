@@ -173,6 +173,8 @@ def last_game(bot, user, channel, args):
         r = api.get_recent_games(id,region)['games'][0]
     except:
         bot.send_msg(channel, 'Something went wrong.')
+        import traceback
+        traceback.print_exc()
         return
     
     s = r['stats']
