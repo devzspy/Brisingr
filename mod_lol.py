@@ -40,9 +40,7 @@ game_types = {
     'RANKED_FLEX_SR': 'Ranked Flex',            # Ranked Flex Queue
 }
 
-summoner_ids = {
-
-}
+summoner_ids = {}
 
 summoners = {
     "barrier": "Shields your champion for 115~455 health [95 + (20 x level)] for 2 seconds.",
@@ -123,12 +121,13 @@ def patch(bot, user, channel, args):
     bot.send_msg(channel, msg)
 
 def get_summoner_id(name, region):
-    if name in summoner_ids:
-        return summoner_ids[name]
+    key = (region, name)
+    if key in summoner_ids:
+        return summoner_ids[key]
     else:
-        r = api.get_summoner(name = name, region = region)['id']
-        summoner_ids[name] = r
-        return r
+        r = api.get_summoner(name = name, region = region)
+        summoner_ids[key] = r['id']
+        return r['id']
 
 def free_to_play(bot, user, channel, args):
     r = api.get_all_champions(free_to_play = True)
