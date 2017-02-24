@@ -27,6 +27,9 @@ custom_aliases = {
     "wukong": "MonkeyKing",
 }
 
+item_id_to_name_map = {}
+
+
 def normalize_name(name):
     # Only retain alphanumerics and lower-case
     return re.sub(r'[^a-zA-Z0-9]+', '', name).lower()
@@ -68,6 +71,7 @@ def set_patch_version(api, version):
     if patch_version != version:
         patch_version = version
         build_name_to_key_map(api)
+        update_items(api)
 
 def build_name_to_key_map(api):
     champions = api.static_get_champion_list()
@@ -79,3 +83,11 @@ def build_name_to_key_map(api):
         id_to_name_map[champion['id']] = champion['name']
 
     name_to_key_map.update(custom_aliases)
+
+def update_items(api):
+    item_list = api.static_get_item_list()
+    item_id_to_name_map.clear()
+    for item in item_list['data'].values():
+        item_id_to_name_map[item['id']] = item.get('name', "No Name")
+        if item['id'] == 3707:
+            print(item)

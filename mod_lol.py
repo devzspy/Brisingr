@@ -4,7 +4,6 @@ import functools
 from twisted.internet import task
 
 from lib_riotwatcher import RiotWatcher
-from items import items
 from fuzzy_finder import fuzzyfinder
 import config
 import lol_ddragon
@@ -40,9 +39,7 @@ game_types = {
     'RANKED_FLEX_SR': 'Ranked Flex',            # Ranked Flex Queue
 }
 
-summoner_ids = {
-
-}
+summoner_ids = {}
 
 summoners = {
     "barrier": "Shields your champion for 115~455 health [95 + (20 x level)] for 2 seconds.",
@@ -123,12 +120,13 @@ def patch(bot, user, channel, args):
     bot.send_msg(channel, msg)
 
 def get_summoner_id(name, region):
-    if name in summoner_ids:
-        return summoner_ids[name]
+    key = (region, name)
+    if key in summoner_ids:
+        return summoner_ids[key]
     else:
-        r = api.get_summoner(name = name, region = region)['id']
-        summoner_ids[name] = r
-        return r
+        r = api.get_summoner(name = name, region = region)
+        summoner_ids[key] = r['id']
+        return r['id']
 
 def free_to_play(bot, user, channel, args):
     r = api.get_all_champions(free_to_play = True)
@@ -174,6 +172,8 @@ def last_game(bot, user, channel, args):
         r = api.get_recent_games(id,region)['games'][0]
     except:
         bot.send_msg(channel, 'Something went wrong.')
+        import traceback
+        traceback.print_exc()
         return
     
     s = r['stats']
@@ -256,7 +256,7 @@ def last_game(bot, user, channel, args):
         except:
             continue
     for item in item_list:
-        items_str += items[item] + ', '
+        items_str += lol_ddragon.item_id_to_name_map.get(item, 'Unknown Item') + ', '
     items_str = str(items_str[:len(items_str) - 2])
     
     champ = lol_ddragon.id_to_name_map[r['championId']]
@@ -393,7 +393,7 @@ def last_game_detail(bot, user, channel, args):
         except:
             continue
     for item in item_list:
-        items_str += items[item] + ', '
+        items_str += lol_ddragon.item_id_to_name_map.get(item, 'Unknown Item') + ', '
     items_str = str(items_str[:len(items_str) - 2])
 
     summoners = {
