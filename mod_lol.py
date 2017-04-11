@@ -175,6 +175,18 @@ def last_game(bot, user, channel, args):
         import traceback
         traceback.print_exc()
         return
+
+    try:
+        t = api.get_current_rank(id,region)
+    except:
+        t = "Unranked"
+
+    myid = str(id)
+    if t != "Unranked":
+        My_rank = t[myid][0]['tier']
+        rank = My_rank[0] + My_rank[1:].lower()
+    else:
+        rank = "Unranked"
     
     s = r['stats']
     
@@ -282,7 +294,7 @@ def last_game(bot, user, channel, args):
             
     summoner_str = summoners[spell1] + ', ' + summoners[spell2]
 
-    msg = '[%s] [%s] [%s] [%s] [%s] [Level: %s | Gold Earned: %s] [KDA: %s | CS: %s | Wards Used: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, kda, str(cs+cs_neutral), ward_placed ,items_str, summoner_str)
+    msg = '[%s] [Rank: %s] [%s] [%s] [%s] [%s] [Level: %s | Gold Earned: %s] [KDA: %s | CS: %s | Wards Used: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), rank, game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, kda, str(cs+cs_neutral), ward_placed ,items_str, summoner_str)
         
     msg = str(msg)
     bot.send_msg(channel, msg)
@@ -297,6 +309,18 @@ def last_game_detail(bot, user, channel, args):
     except:
         bot.send_msg(channel, 'Something went wrong.')
         return
+
+    try:
+        t = api.get_current_rank(id,region)
+    except:
+        t = "Unranked"
+
+    myid = str(id)
+    if t != "Unranked":
+        My_rank = t[myid][0]['tier']
+        rank = My_rank[0] + My_rank[1:].lower()
+    else:
+        rank = "Unranked"
     
     s = r['stats']
     
@@ -419,7 +443,7 @@ def last_game_detail(bot, user, channel, args):
 
     champ = lol_ddragon.id_to_name_map[r['championId']]
     
-    msg = '[%s] [%s] [%s] [%s] [%s] [Level: %s] [Gold Earned: %s | Spent: %s] [KDA: %s] [Total CS: %s | Enemy JG: %s | Your JG: %s] [Wards Used: %s | Killed: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, gold_spent , kda, str(cs+cs_neutral), str(cs_enemy_jungle), str(cs_my_jungle), ward_placed, ward_kill, items_str, summoner_str)
+    msg = '[%s] [Rank: %s] [%s] [%s] [%s] [%s] [Level: %s] [Gold Earned: %s | Spent: %s] [KDA: %s] [Total CS: %s | Enemy JG: %s | Your JG: %s] [Wards Used: %s | Killed: %s] [Items: %s] [Summoners: %s]' % (' '.join(args[1:]), rank, game_types[r['subType']], result, time, champ, str(s['level']), gold_earned, gold_spent , kda, str(cs+cs_neutral), str(cs_enemy_jungle), str(cs_my_jungle), ward_placed, ward_kill, items_str, summoner_str)
         
     msg = str(msg)
     bot.send_msg(channel, msg)

@@ -332,6 +332,9 @@ class RiotWatcher:
             **kwargs
         )
 
+    def get_current_rank(self, summoner_id, region):
+        return self._league_request('by-summoner/{summoner_id}/entry'.format(summoner_id=summoner_id), region)
+
     def get_league(self, summoner_ids=None, team_ids=None, region=None):
         """summoner_ids and team_ids arguments must be iterable, only one should be specified, not both"""
         if (summoner_ids is None) != (team_ids is None):
