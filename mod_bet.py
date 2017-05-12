@@ -10,6 +10,7 @@ import MySQLdb
     April 18th 2017 - Started to write the script
     April 19th 2017 - Finished CheckPoints function. Added some high level pseudo code to map out what's needed.
                       Further defined how command syntax should look
+    May 12th 2017   - Added !winner as a command for declaring winner of X game. Did not add code to it.
 '''
 
 def on_load(bot):
@@ -17,6 +18,7 @@ def on_load(bot):
     bot.add_command('delete', delGame)
     bot.add_command('end', endGame)
     bot.add_command('bet', userBet)
+    bot.add_command('winner', winner)
     bot.add_command('checkpoints', checkPoints)
 
 def on_exit(bot):
@@ -24,6 +26,7 @@ def on_exit(bot):
     bot.del_command('delete')
     bot.del_command('end')
     bot.del_command('bet')
+    bot.del_command('winner')
     bot.del_command('checkpoints')
 
 def openDatabase():
@@ -57,15 +60,11 @@ def delGame(bot, user, channel, args):      #This is to delete a game if it was 
 
 def endGame(bot, user, channel, args):      #This is to end betting
 '''
-    !endgame team1/team2
+    !end team1 team2
 
-    This will then "pop" the game out of the queue and pull the next game to the top of the stack.
-    It will then allow !bet to just bet on the newest game rather than doing !bet game team points
+    This section was reworked. Previous description is now under !winner command
 
-    Reserved for admins
-
-    Take the current game, curGame.remove essentially. Then give user points that guessed correct winning team. Remove points from
-    people that guessed the incorrect winning team. Update all points accordingly.
+    Essentially to stop betting on a certain game so user's can't wait until the end of a match to be for free points.
     
 '''
     msg = 'This is an example.'
@@ -95,6 +94,20 @@ def userBet(bot, user, channel, args):      #user places bet, checks points agai
             bot.send_msg(channel, msg)
     except:
         return
+
+def winner(bot, user, channel, args):
+'''
+     This will then "pop" the game out of the queue and pull the next game to the top of the stack.
+    It will then allow !bet to just bet on the newest game rather than doing !bet game team points
+    
+    Reserved for admins
+    
+    Take the current game, curGame.remove essentially. Then give user points that guessed correct winning team. Remove points from
+    people that guessed the incorrect winning team. Update all points accordingly.
+'''
+    msg = 'This is an example.'
+    bot.send_msg(channel, msg)
+
 
 def checkPoints(bot, user, channel, args):      #Let's the users check how many points they have
 '''
