@@ -11,6 +11,7 @@ import MySQLdb
     April 19th 2017 - Finished CheckPoints function. Added some high level pseudo code to map out what's needed.
                       Further defined how command syntax should look
     May 12th 2017   - Added !winner as a command for declaring winner of X game. Did not add code to it.
+    May 14th 2017   - Fixed up checkPoints a bit and supposedly finished userBet.
 '''
 
 def on_load(bot):
@@ -82,16 +83,34 @@ def userBet(bot, user, channel, args):      #user places bet, checks points agai
         db = openDatabase()
 
         cursor = db.cursor()
-
-        user_exist_check = cursor.execute("SELECT nickname FROM leagueoflegends WHERE nickname='%s'" % user)
-        if user_exist_check == 0:
+        
+        user_exists = cursor.execute("SELECT points FROM leagueoflegends WHERE nickname='%s'" % user)
+        if user_exists == 0:
             db.close()
-            msg = "%s, you are currently not registered in the database. Please type !register to become eligible for betting." % user
+            msg = "%s, you are currently not registered" % user
             bot.send_msg(channel, msg)
-        elif user_exist_check == 1:
-            #insert code here
-            msg = 'This is an example.'
+
+        team = args[1].lower()
+        bet_points = args[2]
+        user_points = ""
+
+        for row in cur.fetchall();
+            user_points = str(row)
+
+        db.close()
+
+        user_points = user_points.replace("(", "")
+        user_points = user_points.replace(")", "")
+        user_points = user_points.replace(",", "")
+        user_points = user_points.replace("L", "")
+
+        if user_points is not None and bet_points <= user_points:
+            msg = "%s has %s points" % (user, points)
             bot.send_msg(channel, msg)
+        else if user_points is not None and bet_points > user_points:
+            msg = "%s you are trying to bet more points then what you have" % user
+            bot.send_msg(channel, msg)
+        
     except:
         return
 
@@ -119,14 +138,26 @@ def checkPoints(bot, user, channel, args):      #Let's the users check how many 
 
         cursor = db.cursor()
         
-        user_exist_check = cursor.execute("SELECT nickname FROM leagueoflegends WHERE nickname='%s'" % user)
-        if user_exist_check == 0:
+        user_exists = cursor.execute("SELECT points FROM leagueoflegends WHERE nickname='%s'" % user)
+        if user_exists == 0:
             db.close()
-            msg = "%s, you are currently not registered in the database. Please type !register to become eligible for betting." % user
+            msg = "%s, you are currently not registered" % user
             bot.send_msg(channel, msg)
-        elif user_exist_check == 1:
-            points = cursor.execute("SELECT points FROM leagueoflegends WHERE nickname='%s'" % user)
-            msg = "%s: has %s points" % (user,points)
-            bot.send_msg(channel, msg)
+
+        points = ""
+
+        for row in cur.fetchall();
+            points = str(row)
+
+        db.close()
+
+        points = points.replace("(", "")
+        points = points.replace(")", "")
+        points = points.replace(",", "")
+        points = points.replace("L", "")
+
+        if points is not None:
+            msg = "%s has %s points" % (user, points)
+            bot.send_msg(channel, msg)        
     except:
         return
