@@ -38,6 +38,7 @@ game_types = {
     'DEFINITELY_NOT_DOMINION_5x5': 'Dominion',  # Dominion
     'RANKED_FLEX_SR': 'Ranked Flex',            # Ranked Flex Queue
     'ARSR_5x5': 'All Random Summoner\'s Rift games', #All Random Summoners Rift
+    'DARKSTAR_3x3': '	Darkstar games'                 #Darkstar games
 }
 
 summoner_ids = {}
