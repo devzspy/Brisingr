@@ -2,19 +2,8 @@ import string
 import re
 import MySQLdb
 
-'''
-    Currently a work in progress.
-    
-    Changelog for my own sanity
-    ---------------------------
-    April 18th 2017 - Started to write the script
-    April 19th 2017 - Finished CheckPoints function. Added some high level pseudo code to map out what's needed.
-                      Further defined how command syntax should look
-    May 12th 2017   - Added !winner as a command for declaring winner of X game. Did not add code to it.
-    May 14th 2017   - Fixed up checkPoints a bit and supposedly finished userBet.
-'''
-
 def on_load(bot):
+    bot.add_command('register', register)
     bot.add_command('add', addGame)
     bot.add_command('delete', delGame)
     bot.add_command('end', endGame)
@@ -23,6 +12,7 @@ def on_load(bot):
     bot.add_command('checkpoints', checkPoints)
 
 def on_exit(bot):
+    bot.del_command('register')
     bot.del_command('add')
     bot.del_command('delete')
     bot.del_command('end')
@@ -38,6 +28,28 @@ def openDatabase():
                              db="DB_NAME")  # name of the data base
 
         return db
+    except:
+        return
+
+def register(bot, user, channel, args):     #Registers the user in database by nickname
+    try:
+        db = openDatabase()
+
+        cursor = db.cursor()
+
+        exists = cur.execute("SELECT nickname FROM leagueoflegends WHERE nickname='%s'" % user)
+        if (exists == 0):
+            cur.execute("INSERT INTO leagueoflegends (nickname, points) VALUES('%s')" % (user, 10))
+        else:
+            msg = "%s has already been registered" % user
+            bot.send_msg(channel, msg)))
+            db.close()
+            return
+        db.commit()
+        db.close()
+        
+        msg = "%s, you have been registered. You were given 10 points to start with" % user
+        bot.send_msg(channel, msg)
     except:
         return
     
