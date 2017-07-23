@@ -234,8 +234,8 @@ class RiotWatcher:
             if kwargs[k] is not None:
                 args[k] = kwargs[k]
         r = requests.get(
-            #'https://{region}.api.pvp.net/api/lol/{static}{region}/{url}'.format(
-            'https://{region}.api.riotgames.com/api/lol/{static}{region}/{url}'.format(
+            'https://{region}.api.pvp.net/api/lol/{static}{region}/{url}'.format(
+            #'https://{region}.api.riotgames.com/api/lol/{static}{region}/{url}'.format(
                 proxy='global' if static else region,
                 static='static-data/' if static else '',
                 region=region,
@@ -257,8 +257,8 @@ class RiotWatcher:
             if kwargs[k] is not None:
                 args[k] = kwargs[k]
         r = requests.get(
-            #'https://{region}.api.pvp.net/observer-mode/rest/{url}'.format(
-            'https://{region}.api.riotgames.com/observer-mode/rest/{url}'.format(
+            'https://{region}.api.pvp.net/observer-mode/rest/{url}'.format(
+            #'https://{region}.api.riotgames.com/observer-mode/rest/{url}'.format(
                 region=region,
                 url=url
             ),
@@ -333,9 +333,6 @@ class RiotWatcher:
             region,
             **kwargs
         )
-
-    def get_current_rank(self, summoner_id, region):
-        return self._league_request('by-summoner/{summoner_id}/entry'.format(summoner_id=summoner_id), region)
 
     def get_league(self, summoner_ids=None, team_ids=None, region=None):
         """summoner_ids and team_ids arguments must be iterable, only one should be specified, not both"""
