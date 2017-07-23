@@ -234,7 +234,8 @@ class RiotWatcher:
             if kwargs[k] is not None:
                 args[k] = kwargs[k]
         r = requests.get(
-            'https://{region}.api.pvp.net/api/lol/{static}{region}/{url}'.format(
+            #'https://{region}.api.pvp.net/api/lol/{static}{region}/{url}'.format(
+            'https://{region}.api.riotgames.com/api/lol/{static}{region}/{url}'.format(
                 proxy='global' if static else region,
                 static='static-data/' if static else '',
                 region=region,
@@ -256,7 +257,8 @@ class RiotWatcher:
             if kwargs[k] is not None:
                 args[k] = kwargs[k]
         r = requests.get(
-            'https://{region}.api.pvp.net/observer-mode/rest/{url}'.format(
+            #'https://{region}.api.pvp.net/observer-mode/rest/{url}'.format(
+            'https://{region}.api.riotgames.com/observer-mode/rest/{url}'.format(
                 region=region,
                 url=url
             ),
