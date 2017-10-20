@@ -3,16 +3,17 @@ import time
 import requests
 
 # Constants
-BRAZIL = 'br'
-EUROPE_NORDIC_EAST = 'eune'
-EUROPE_WEST = 'euw'
+BRAZIL = 'br1'
+EUROPE_NORDIC_EAST = 'eun1'
+EUROPE_WEST = 'euw1'
 KOREA = 'kr'
-LATIN_AMERICA_NORTH = 'lan'
-LATIN_AMERICA_SOUTH = 'las'
-NORTH_AMERICA = 'na'
-OCEANIA = 'oce'
+LATIN_AMERICA_NORTH = 'la1'
+LATIN_AMERICA_SOUTH = 'la2'
+NORTH_AMERICA = 'na1'
+OCEANIA = 'oc1'
 RUSSIA = 'ru'
-TURKEY = 'tr'
+TURKEY = 'tr1'
+JAPAN = 'jp1'
 
 # Platforms
 platforms = {
@@ -25,7 +26,8 @@ platforms = {
     NORTH_AMERICA: 'NA1',
     OCEANIA: 'OC1',
     RUSSIA: 'RU',
-    TURKEY: 'TR1'
+    TURKEY: 'TR1',
+    JAPAN: 'JP1'
 }
 
 queue_types = [
@@ -147,18 +149,18 @@ player_stat_summary_types = [
 solo_queue, ranked_5s, ranked_3s = 'RANKED_SOLO_5x5', 'RANKED_TEAM_5x5', 'RANKED_TEAM_3x3'
 
 api_versions = {
-    'champion': 1.2,
-    'current-game': 1.0,
-    'featured-games': 1.0,
-    'game': 1.3,
-    'league': 2.5,
-    'lol-static-data': 1.2,
-    'lol-status': 1.0,
-    'match': 2.2,
-    'matchhistory': 2.2,
-    'stats': 1.3,
-    'summoner': 1.4,
-    'team': 2.4
+    'champion': 3,
+    'current-game': 3,
+    'featured-games': 3,
+    'game': 3,
+    'league': 3,
+    'lol-static-data': 3,
+    'lol-status': 3,
+    'match': 3,
+    'matchhistory': 3,
+    'stats': 3,
+    'summoner': 3,
+    'team': 3
 }
 
 
@@ -234,8 +236,9 @@ class RiotWatcher:
             if kwargs[k] is not None:
                 args[k] = kwargs[k]
         r = requests.get(
-            'https://{region}.api.pvp.net/api/lol/{static}{region}/{url}'.format(
+            #'https://{region}.api.pvp.net/api/lol/{static}{region}/{url}'.format(
             #'https://{region}.api.riotgames.com/api/lol/{static}{region}/{url}'.format(
+            'https://{region}.api.riotgames.com/lol/{static}{url}'.format(
                 proxy='global' if static else region,
                 static='static-data/' if static else '',
                 region=region,
@@ -257,8 +260,9 @@ class RiotWatcher:
             if kwargs[k] is not None:
                 args[k] = kwargs[k]
         r = requests.get(
-            'https://{region}.api.pvp.net/observer-mode/rest/{url}'.format(
+            #'https://{region}.api.pvp.net/observer-mode/rest/{url}'.format(
             #'https://{region}.api.riotgames.com/observer-mode/rest/{url}'.format(
+            'https://{region}.api.riotgames.com/observer-mode/rest/{url}'.format(
                 region=region,
                 url=url
             ),
@@ -381,7 +385,7 @@ class RiotWatcher:
 
     def static_get_champion_list(self, region=None, locale=None, version=None, data_by_id=None, champ_data=None):
         return self._static_request(
-            'champion',
+            'champions',
             region,
             locale=locale,
             version=version,
@@ -391,7 +395,7 @@ class RiotWatcher:
 
     def static_get_champion(self, champ_id, region=None, locale=None, version=None, champ_data=None):
         return self._static_request(
-            'champion/{id}'.format(id=champ_id),
+            'champions/{id}'.format(id=champ_id),
             region,
             locale=locale,
             version=version,
