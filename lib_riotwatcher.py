@@ -277,7 +277,9 @@ class RiotWatcher:
     def sanitized_name(name):
         return name.replace(' ', '').lower()
 
-    # champion-v1.2
+#############################
+#   LoL Champion 3.0        # 
+#############################
     def _champion_request(self, end_url, region, **kwargs):
         if end_url:
             end_url = "/" + end_url
@@ -371,7 +373,9 @@ class RiotWatcher:
     def get_challenger(self, region=None, queue=solo_queue):
         return self._league_request('challenger', region, type=queue)
 
-    # lol-static-data-v1.2
+#############################
+#   LoL Static Data 3.0     # 
+#############################
     def _static_request(self, end_url, region, **kwargs):
         return self.base_request(
             'v{version}/{end_url}'.format(
@@ -402,12 +406,12 @@ class RiotWatcher:
             champData=champ_data
         )
 
-    def static_get_item_list(self, region="na", locale=None, version=None, item_list_data=None):
-        return self._static_request('item', region, locale=locale, version=version, itemListData=item_list_data)
+    def static_get_item_list(self, region="na1", locale="en_US", version=None, item_list_data=None):
+        return self._static_request('items', region, locale=locale, version=version, itemListData=item_list_data)
 
-    def static_get_item(self, item_id, region="na", locale=None, version=None, item_data=None):
+    def static_get_item(self, item_id, region="na1", locale="en_US", version=None, item_data=None):
         return self._static_request(
-            'item/{id}'.format(id=item_id),
+            'items/{id}'.format(id=item_id),
             region,
             locale=locale,
             version=version,
@@ -416,7 +420,7 @@ class RiotWatcher:
 
     def static_get_mastery_list(self, region=None, locale=None, version=None, mastery_list_data=None):
         return self._static_request(
-            'mastery',
+            'masteries',
             region,
             locale=locale,
             version=version,
@@ -425,7 +429,7 @@ class RiotWatcher:
 
     def static_get_mastery(self, mastery_id, region=None, locale=None, version=None, mastery_data=None):
         return self._static_request(
-            'mastery/{id}'.format(id=mastery_id),
+            'masteries/{id}'.format(id=mastery_id),
             region,
             locale=locale,
             version=version,
@@ -433,14 +437,14 @@ class RiotWatcher:
         )
 
     def static_get_realm(self, region=None):
-        return self._static_request('realm', region)
+        return self._static_request('realms', region)
 
     def static_get_rune_list(self, region=None, locale=None, version=None, rune_list_data=None):
-        return self._static_request('rune', region, locale=locale, version=version, runeListData=rune_list_data)
+        return self._static_request('runes', region, locale=locale, version=version, runeListData=rune_list_data)
 
     def static_get_rune(self, rune_id, region=None, locale=None, version=None, rune_data=None):
         return self._static_request(
-            'rune/{id}'.format(id=rune_id),
+            'runes/{id}'.format(id=rune_id),
             region,
             locale=locale,
             version=version,
@@ -449,7 +453,7 @@ class RiotWatcher:
 
     def static_get_summoner_spell_list(self, region=None, locale=None, version=None, data_by_id=None, spell_data=None):
         return self._static_request(
-            'summoner-spell',
+            'summoner-spells',
             region,
             locale=locale,
             version=version,
@@ -459,7 +463,7 @@ class RiotWatcher:
 
     def static_get_summoner_spell(self, spell_id, region=None, locale=None, version=None, spell_data=None):
         return self._static_request(
-            'summoner-spell/{id}'.format(id=spell_id),
+            'summoner-spells/{id}'.format(id=spell_id),
             region,
             locale=locale,
             version=version,
