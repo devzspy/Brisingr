@@ -5,17 +5,16 @@
 * BeamofLove
 * FichteFoll
 
-## Changelog
-http://www.falconspy.org/irc-lol-bot-changelog/
-
 ## Requirements
 * Python 2.7
 * Twisted Matrix Library(https://twistedmatrix.com/trac/)
+* Python-Fortnite-API-Wrapper(https://github.com/nicolaskenner/python-fortnite-api-wrapper)
 
 ## Configurations
 * Riot API Key
 * Google Search API Key
 * QuakeNet Auth Name and Password
+* Fortnite email, password, launcher token, and game token
 * Bot Administrator password
 * See the config.py for the rest!
 
@@ -36,7 +35,7 @@ http://www.falconspy.org/irc-lol-bot-changelog/
 * !lolnews [n] - Shows Nth most recent news article on LoL site (N is optional)
 * !freerp - Just jokingly  outputs a code to the channel. Doesn't actually do anything
 
-### Fortnite Commnads
+### Fortnite Commands
 * !fortstatus - Outputs the server status
 * !fortid username - Outputs the player ID of the username supplied
 
